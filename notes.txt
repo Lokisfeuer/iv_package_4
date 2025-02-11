@@ -1,0 +1,22 @@
+- see image in self chat
+    - mcmc x parameter should take an array, should default to all x simultaneously
+    - mcmc should always include x being infinity
+- Also:
+    - Development of P(h) over sample size.
+        - with uncertainty
+        - curve fitting
+
+
+TODO: How can P(h) = a - b/n be possible? seems to be way to fast-growing towards asymptote.
+    With these restraints: 1 >= a >= b >= 0, if that is true how
+        Because 1 >= a >= 0 and b >= 0
+        and b gotta be smaller than a because for n=1 prob should still be >= 0.
+            This last one is not implemented in the code (and I think thats good).
+
+TODO: Time schätzer einbauen - tqdm
+
+TODO: don't return negative values (if user gives supersmall n)
+
+TODO: bei n=0 ist immer 1/anzahl_label, mergen (mixen) mit a-b/n Formel.
+
+TODO: get_ab() method.
