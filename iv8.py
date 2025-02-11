@@ -19,10 +19,13 @@ class IV:
         # - Eckert Paper genau nachlesen.
         # - im paper korrigieren.
     def __init__(self, x_data, y_data, classifier):
-        # TODO: Shuffle parameter
+
+        # Shuffle the dataset (x_data and y_data remain aligned)
+        indices = np.random.permutation(len(x_data))
+
         # Save data and classifier (a clone is stored to avoid external modifications)
-        self.x_data = x_data
-        self.y_data = y_data
+        self.x_data = x_data[indices]
+        self.y_data = y_data[indices]
         self.classifier = clone(classifier)
 
         # The unique labels in the data.
