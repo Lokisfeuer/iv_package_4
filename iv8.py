@@ -40,11 +40,11 @@ class IV:
         self.posterior = {}
 
         # Caches for distributions
-        self.accuracy_cache = {}  # key: (label, n)
-        self.bacc_cache = {}      # key: n
-        self.acc_cache = {}       # key: n
-        self.multi_cache = {}     # key: (key, n)
-        self.development_cache = {}  # key: key -> dict
+        self._accuracy_cache = {}  # key: (label, n)
+        self._bacc_cache = {}      # key: n
+        self._acc_cache = {}       # key: n
+        self._multi_cache = {}     # key: (key, n)
+        self._development_cache = {}  # key: key -> dict
 
         # Frequency for each label in the full dataset for weighted overall accuracy.
         total = len(y_data)
@@ -211,8 +211,8 @@ class IV:
             A frozen distribution (rv_histogram) representing the accuracy distribution.
         """
         cache_key = (label, n)
-        if cache_key in self.accuracy_cache:
-            dist, raw_samples = self.accuracy_cache[cache_key]
+        if cache_key in self._accuracy_cache:
+            dist, raw_samples = self._accuracy_cache[cache_key]
         else:
             # NEW: Instead of raising an error if the posterior for the label is missing,
             # issue a warning and automatically compute it for that label.
@@ -230,7 +230,7 @@ class IV:
             num_bins = 50
             hist, bin_edges = np.histogram(accuracy_samples, bins=num_bins, density=True)
             dist = rv_histogram((hist, bin_edges))
-            self.accuracy_cache[cache_key] = (dist, accuracy_samples)
+            self._accuracy_cache[cache_key] = (dist, accuracy_samples)
             raw_samples = accuracy_samples
 
         if plot:
@@ -265,8 +265,8 @@ class IV:
         Returns:
             A frozen distribution (rv_histogram) representing the balanced accuracy.
         """
-        if n in self.bacc_cache:
-            bacc_dist = self.bacc_cache[n]
+        if n in self._bacc_cache:
+            bacc_dist = self._bacc_cache[n]
         else:
             distributions = []
             for label in self.labels:
@@ -274,7 +274,7 @@ class IV:
                 distributions.append(dist)
             weights = [1 / len(self.labels)] * len(self.labels)
             bacc_dist = weighted_sum_distribution(distributions, weights=weights)
-            self.bacc_cache[n] = bacc_dist
+            self._bacc_cache[n] = bacc_dist
 
         if plot:
             x_grid = np.linspace(0, 1, 200)
@@ -304,8 +304,8 @@ class IV:
         Returns:
             A frozen distribution (rv_histogram) representing the overall accuracy.
         """
-        if n in self.acc_cache:
-            acc_dist = self.acc_cache[n]
+        if n in self._acc_cache:
+            acc_dist = self._acc_cache[n]
         else:
             distributions = []
             weights = []
@@ -314,7 +314,7 @@ class IV:
                 distributions.append(dist)
                 weights.append(self.label_frequencies[label])
             acc_dist = weighted_sum_distribution(distributions, weights=weights)
-            self.acc_cache[n] = acc_dist
+            self._acc_cache[n] = acc_dist
 
         if plot:
             x_grid = np.linspace(0, 1, 200)
@@ -361,8 +361,8 @@ class IV:
         for key in keys:
             for n_val in n:
                 cache_key = (key, n_val)
-                if cache_key in self.multi_cache:
-                    dist = self.multi_cache[cache_key]
+                if cache_key in self._multi_cache:
+                    dist = self._multi_cache[cache_key]
                 else:
                     if key == 'bacc':
                         dist = self.get_bacc_dist(n=n_val, plot=False)
@@ -372,7 +372,7 @@ class IV:
                         dist = self.get_label_accuracy(key, plot=False, n=n_val)
                     else:
                         raise ValueError(f"Key {key} not recognized. Must be a label, 'bacc', or 'acc'.")
-                    self.multi_cache[cache_key] = dist
+                    self._multi_cache[cache_key] = dist
                 result[(key, n_val)] = dist
 
                 if plot:
