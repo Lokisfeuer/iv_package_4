@@ -69,12 +69,30 @@ class IV:
 
         # Initial training set: use the first start_trainset_size samples.
         train_indices = list(range(start_trainset_size))
-        x_train = self.x_data[train_indices]
-        y_train = self.y_data[train_indices]
-        self.classifier.fit(x_train, y_train)
 
         # Process remaining samples in order, batch-by-batch.
         current_index = start_trainset_size
+
+        # Extend until all classes are inside trainingsset
+        while len(np.unique(self.y_data[train_indices])) < len(self.labels) and current_index < n_total:
+            batch_indices = list(range(current_index, min(current_index + batch_size, n_total)))
+            x_batch = self.x_data[batch_indices]
+            y_batch = self.y_data[batch_indices]
+            current_train_size = len(train_indices)
+            # guessing prediction
+            predictions = np.random.choice(self.labels, size=len(batch_indices)) 
+            for i, true_label in enumerate(y_batch):
+                outcome = 1 if predictions[i] == true_label else 0
+                self.iv_records[true_label]['sizes'].append(current_train_size)
+                self.iv_records[true_label]['outcomes'].append(outcome)
+            train_indices.extend(batch_indices)
+            current_index += batch_size
+
+        # Initial Fit
+        x_train = self.x_data[train_indices]  
+        y_train = self.y_data[train_indices] 
+        self.classifier.fit(x_train, y_train) 
+
         while current_index < n_total:
             batch_indices = list(range(current_index, min(current_index + batch_size, n_total)))
             x_batch = self.x_data[batch_indices]
