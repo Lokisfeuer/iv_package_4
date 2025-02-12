@@ -8,8 +8,9 @@ import warnings
 def independent_validation(classifier, X, y, key="bacc", n=float("inf"), return_mean=True, plot=False,
                            iv_start_trainset_size=2,
                            iv_batch_size=None, iv_n_batches=None,
-                           mcmc_num_samples=1000, mcmc_step_size=0.05,
-                           mcmc_burn_in=100, mcmc_thin=50, mcmc_random_seed=None):
+                           mcmc_num_samples=1000, mcmc_step_size=0.1,
+                           mcmc_burn_in=10000, mcmc_thin=50, mcmc_random_seed=None):
+    # TODO: Unify thinning default value for this function and iv method!
     """
     Perform Independent Validation (IV) on an estimator and extract accuracy metrics.
 

@@ -100,7 +100,7 @@ class IV:
 
             current_index += batch_size
 
-    def compute_posterior(self, num_samples=1000, step_size=0.05, burn_in=100, thin=1, random_seed=None, label=None):
+    def compute_posterior(self, num_samples=1000, step_size=0.1, burn_in=10000, thin=50, random_seed=None, label=None):
         """
         Computes the posterior distribution for the parameters (asymptote, offset_factor)
         based on the IV records via Markov Chain Monte Carlo (MCMC).

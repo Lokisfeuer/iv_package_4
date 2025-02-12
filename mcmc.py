@@ -5,7 +5,7 @@ def metropolis_hastings(
         target_log_prob_fn,
         initial_value,
         num_samples,
-        step_size=1.0,
+        step_size=0.1,
         proposal_fn=None,
         burn_in=0,
         thin=1,
